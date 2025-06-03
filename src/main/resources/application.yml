@@ -1,0 +1,168 @@
+# application.yml - 메인 설정
+spring:
+  profiles:
+    active: local  # 기본 프로필
+
+  # 데이터베이스 설정
+  datasource:
+    url: jdbc:h2:mem:roomescape
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  # H2 Console 설정
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  # JPA 설정
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop  # 개발용 (운영에서는 validate)
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+    defer-datasource-initialization: true
+
+  # SQL 초기화 설정
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:data.sql
+
+# JWT 설정
+jwt:
+  secret: roomescape-secret-key-for-jwt-token-signing-must-be-long-enough-for-security
+  validity: 3600000  # 1시간 (밀리초)
+
+# 로깅 설정
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    roomescape: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+# 서버 설정
+server:
+  port: 8080
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+---
+# application-local.yml (로컬 개발 환경)
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  # 개발용 데이터베이스
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+
+jwt:
+  secret: local-development-secret-key-for-roomescape-jwt-token
+  validity: 7200000  # 2시간 (개발 편의를 위해 길게)
+
+logging:
+  level:
+    root: INFO
+    roomescape: DEBUG
+
+---
+# application-test.yml (테스트 환경)
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  # 테스트용 데이터베이스
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+
+  sql:
+    init:
+      mode: never  # 테스트에서는 SQL 초기화 비활성화
+
+jwt:
+  secret: test-secret-key-for-unit-testing-roomescape-application
+  validity: 1800000  # 30분 (테스트용 짧게)
+
+logging:
+  level:
+    root: WARN
+    roomescape: INFO
+
+---
+# application-prod.yml (운영 환경)
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  # 운영 데이터베이스 (MySQL 예시)
+  datasource:
+    url: jdbc:mysql://localhost:3306/roomescape?useSSL=false&serverTimezone=Asia/Seoul
+    username: ${DB_USERNAME:roomescape}
+    password: ${DB_PASSWORD:password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: validate  # 운영에서는 validate만
+    show-sql: false
+
+  sql:
+    init:
+      mode: never  # 운영에서는 수동 마이그레이션
+
+# 운영 환경 JWT 설정 (환경변수 사용)
+jwt:
+  secret: ${JWT_SECRET:default-production-secret-key-change-this-in-production}
+  validity: ${JWT_VALIDITY:3600000}
+
+# 운영 로깅
+logging:
+  level:
+    root: INFO
+    roomescape: INFO
+    org.hibernate: WARN
+  file:
+    name: logs/roomescape.log
+  logback:
+    rollingpolicy:
+      max-file-size: 100MB
+      max-history: 30
+
+server:
+  port: ${SERVER_PORT:8080}
