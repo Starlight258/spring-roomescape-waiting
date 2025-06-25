@@ -9,8 +9,10 @@ import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
+import roomescape.domain.waiting.WaitingWithRank;
 import roomescape.dto.request.member.MemberPrinciple;
 import roomescape.dto.request.reservation.RegularReservationPreservationRequest;
+import roomescape.dto.response.reservation.MyReservationAndWaitingSortedResult;
 import roomescape.dto.response.reservation.MyReservationRetrievalResponse;
 import roomescape.dto.response.reservation.ReservationPreservationResponse;
 import roomescape.dto.response.reservation.ReservationRetrievalResponse;
@@ -21,6 +23,7 @@ import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.repository.WaitingRepository;
 
 @Service
 public class ReservationService {
@@ -29,14 +32,17 @@ public class ReservationService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
     private final MemberRepository memberRepository;
+    private final WaitingRepository waitingRepository;
 
     public ReservationService(final ReservationRepository reservationRepository,
                               final ReservationTimeRepository reservationTimeRepository,
-                              final ThemeRepository themeRepository, final MemberRepository memberRepository) {
+                              final ThemeRepository themeRepository, final MemberRepository memberRepository,
+                              final WaitingRepository waitingRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
         this.memberRepository = memberRepository;
+        this.waitingRepository = waitingRepository;
     }
 
     public ReservationPreservationResponse create(final RegularReservationPreservationRequest request,
@@ -56,6 +62,17 @@ public class ReservationService {
         List<Reservation> reservations = reservationRepository.findAll();
         return reservations.stream()
                 .map(ReservationRetrievalResponse::from)
+                .toList();
+    }
+
+    public List<MyReservationRetrievalResponse> findMyReservations(final MemberPrinciple memberPrinciple) {
+        Long memberId = memberPrinciple.memberId();
+        List<Reservation> reservations = reservationRepository.findByMemberId(memberId);
+        List<WaitingWithRank> waitingWithRanks = waitingRepository.findWaitingsWithRankByMemberId(memberId);
+        List<MyReservationAndWaitingSortedResult> sortedResult = MyReservationAndWaitingSortedResult.of(reservations,
+                waitingWithRanks);
+        return sortedResult.stream()
+                .map(MyReservationRetrievalResponse::from)
                 .toList();
     }
 
@@ -97,12 +114,5 @@ public class ReservationService {
     private Member getMember(final Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("멤버가 존재하지 않습니다."));
-    }
-
-    public List<MyReservationRetrievalResponse> findMyReservations(final MemberPrinciple memberPrinciple) {
-        List<Reservation> reservations = reservationRepository.findByMemberId(memberPrinciple.memberId());
-        return reservations.stream()
-                .map(MyReservationRetrievalResponse::from)
-                .toList();
     }
 }
