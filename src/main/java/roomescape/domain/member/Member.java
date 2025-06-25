@@ -32,7 +32,7 @@ public class Member {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", unique = true, nullable = false)
+    @Column(nullable = false)
     private MemberRole role;
 
     public Member(final MemberName name, final String email, final String password, final MemberRole role) {
