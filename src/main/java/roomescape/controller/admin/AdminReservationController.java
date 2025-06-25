@@ -7,12 +7,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.RequireRole;
+import roomescape.domain.member.MemberRole;
 import roomescape.dto.request.reservation.AdminReservationPreservationRequest;
 import roomescape.dto.response.reservation.ReservationPreservationResponse;
 import roomescape.service.admin.AdminReservationService;
 
 @RestController
 @RequestMapping("/admin/reservations")
+@RequireRole(role = MemberRole.ADMIN)
 public class AdminReservationController {
 
     private final AdminReservationService reservationService;

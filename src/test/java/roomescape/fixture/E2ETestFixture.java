@@ -23,12 +23,13 @@ public class E2ETestFixture {
 
     public static final String DEFAULT_THEME_NAME = "기억저장소";
 
-    public static Long saveReservationTime(LocalTime time) {
+    public static Long saveReservationTime(String sessionId, LocalTime time) {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", time.toString());
 
         ReservationTimePreservationResponse response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("JSESSIONID", sessionId)
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
@@ -40,9 +41,10 @@ public class E2ETestFixture {
         return response.id();
     }
 
-    public static Long saveTheme(String name) {
+    public static Long saveTheme(String sessionId, String name) {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("JSESSIONID", sessionId)
                 .body(new ThemePreservationRequest(name, "memory", "thumbnail.png"))
                 .when().post("/themes")
                 .then().log().all()
@@ -61,9 +63,7 @@ public class E2ETestFixture {
         return themes.getFirst().id();
     }
 
-    public static Long saveReservation(LocalDate date, Long timeId, Long themeId) {
-        String sessionId = E2ETestFixture.signUpRegularAndLogin();
-
+    public static Long saveReservation(String sessionId, LocalDate date, Long timeId, Long themeId) {
         ReservationPreservationResponse response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .cookie("JSESSIONID", sessionId)
@@ -89,9 +89,7 @@ public class E2ETestFixture {
         return signupResponse.id();
     }
 
-    public static String signUpRegularAndLogin() {
-        signUpRegular();
-
+    public static String loginRegular() {
         return RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(new LoginRequest("mint@gmail.com", "password"))
@@ -100,6 +98,11 @@ public class E2ETestFixture {
                 .statusCode(200)
                 .extract()
                 .cookie("JSESSIONID");
+    }
+
+    public static String signUpRegularAndLogin() {
+        signUpRegular();
+        return loginRegular();
     }
 
     public static String loginAdmin() {

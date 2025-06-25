@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.RequireRole;
+import roomescape.domain.member.MemberRole;
 import roomescape.dto.request.theme.ThemePreservationRequest;
 import roomescape.dto.response.reservation.ReservationPreservationResponse;
 import roomescape.dto.response.theme.ThemePopularResponse;
@@ -27,6 +29,7 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
+    @RequireRole(role = MemberRole.ADMIN)
     @PostMapping
     public ResponseEntity<ThemeRetrievalResponse> create(
             final @RequestBody @Valid ThemePreservationRequest request) {
@@ -44,6 +47,7 @@ public class ThemeController {
         return themeService.findTopPopular();
     }
 
+    @RequireRole(role = MemberRole.ADMIN)
     @DeleteMapping("/{id}")
     public ResponseEntity<ReservationPreservationResponse> remove(final @PathVariable Long id) {
         themeService.remove(id);

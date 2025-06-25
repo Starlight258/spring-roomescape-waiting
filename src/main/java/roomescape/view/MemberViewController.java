@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class MemberViewController {
 
     @GetMapping("/reservation")
-    public String getMemberReservationPage() {
+    public String getReservationPage() {
         return "reservation";
     }
 

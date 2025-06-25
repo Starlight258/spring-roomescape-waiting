@@ -1,6 +1,7 @@
 package roomescape.service.regular;
 
 import java.util.List;
+import java.util.Objects;
 import org.springframework.stereotype.Service;
 import roomescape.common.TimeUtils;
 import roomescape.domain.member.Member;
@@ -13,6 +14,8 @@ import roomescape.dto.request.reservation.RegularReservationPreservationRequest;
 import roomescape.dto.response.reservation.ReservationPreservationResponse;
 import roomescape.dto.response.reservation.ReservationRetrievalResponse;
 import roomescape.exception.ConflictException;
+import roomescape.exception.ForbiddenException;
+import roomescape.exception.RoomescapeException;
 import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -55,8 +58,20 @@ public class ReservationService {
                 .toList();
     }
 
-    public void remove(final Long reservationId) {
+    public void remove(final Long reservationId, final MemberPrinciple memberPrinciple) {
+        Long memberId = memberPrinciple.memberId();
+        if (reservationRepository.existsById(reservationId)) {
+            Reservation reservation = getReservation(reservationId);
+            if (!Objects.equals(reservation.getMember().getId(), memberId)) {
+                throw new ForbiddenException("Reservation deletion is forbidden");
+            }
+        }
         reservationRepository.deleteById(reservationId);
+    }
+
+    private Reservation getReservation(final Long reservationId) {
+        return reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new RoomescapeException("Server internal exception"));
     }
 
     private ReservationTime getReservationTime(final Long timeId) {

@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.RequireRole;
 import roomescape.dto.request.member.MemberPrinciple;
@@ -19,7 +18,6 @@ import roomescape.dto.response.reservation.ReservationRetrievalResponse;
 import roomescape.service.regular.ReservationService;
 
 @RestController
-@RequestMapping("/reservations")
 public class ReservationController {
 
     private final ReservationService reservationService;
@@ -28,8 +26,8 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @PostMapping
     @RequireRole
+    @PostMapping("/reservations")
     public ResponseEntity<ReservationPreservationResponse> create(
             final @RequestBody @Valid RegularReservationPreservationRequest request,
             final MemberPrinciple memberPrinciple
@@ -38,14 +36,24 @@ public class ReservationController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping
+    @GetMapping("/reservations")
     public List<ReservationRetrievalResponse> findAll() {
         return reservationService.findAll();
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ReservationPreservationResponse> remove(final @PathVariable Long id) {
-        reservationService.remove(id);
+    @RequireRole
+    @GetMapping("/reservations-mine")
+    public List<ReservationRetrievalResponse> findMyReservations() {
+        return reservationService.findAll();
+    }
+
+    @RequireRole
+    @DeleteMapping("/reservations/{id}")
+    public ResponseEntity<ReservationPreservationResponse> remove(
+            final @PathVariable Long id,
+            final MemberPrinciple memberPrinciple
+    ) {
+        reservationService.remove(id, memberPrinciple);
         return ResponseEntity.noContent().build();
     }
 }

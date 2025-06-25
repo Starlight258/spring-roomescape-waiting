@@ -25,7 +25,7 @@ import roomescape.fixture.UnitTestFixture;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @TestPropertySource(properties = {
-        "spring.sql.init.data-locations="
+        "spring.sql.init.data-locations=classpath:admin-data.sql"
 })
 public class ReservationTimeE2ETest {
 
@@ -41,9 +41,11 @@ public class ReservationTimeE2ETest {
     void saveReservationTime() {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
+        String adminSessionId = E2ETestFixture.loginAdmin();
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("JSESSIONID", adminSessionId)
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
@@ -59,11 +61,13 @@ public class ReservationTimeE2ETest {
     @Test
     void findAllAvailable() {
         // given
-        Long timeId1 = E2ETestFixture.saveReservationTime(LocalTime.of(10, 0));
-        E2ETestFixture.saveReservationTime(LocalTime.of(11, 0));
-        Long themeId = E2ETestFixture.saveTheme(E2ETestFixture.DEFAULT_THEME_NAME);
+        String adminSessionId = E2ETestFixture.loginAdmin();
+        Long timeId1 = E2ETestFixture.saveReservationTime(adminSessionId, LocalTime.of(10, 0));
+        E2ETestFixture.saveReservationTime(adminSessionId, LocalTime.of(11, 0));
+        Long themeId = E2ETestFixture.saveTheme(adminSessionId, E2ETestFixture.DEFAULT_THEME_NAME);
         LocalDate date = UnitTestFixture.makeFutureDate();
-        E2ETestFixture.saveReservation(date, timeId1, themeId);
+        String regularSessionId = E2ETestFixture.signUpRegularAndLogin();
+        E2ETestFixture.saveReservation(regularSessionId, date, timeId1, themeId);
 
         // when
         List<ReservationTimeAvailableResponse> responses = RestAssured.given().log().all()
@@ -86,8 +90,10 @@ public class ReservationTimeE2ETest {
     @Test
     void deleteReservationTime() {
         saveReservationTime();
+        String adminSessionId = E2ETestFixture.loginAdmin();
 
         RestAssured.given().log().all()
+                .cookie("JSESSIONID", adminSessionId)
                 .when().delete("/times/1")
                 .then().log().all()
                 .statusCode(204);

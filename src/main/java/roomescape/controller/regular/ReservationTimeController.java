@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.RequireRole;
+import roomescape.domain.member.MemberRole;
 import roomescape.dto.request.reservationtime.ReservationTimePreservationRequest;
 import roomescape.dto.response.reservation.ReservationPreservationResponse;
 import roomescape.dto.response.reservationtime.ReservationTimeAvailableResponse;
@@ -29,6 +31,7 @@ public class ReservationTimeController {
         this.reservationTimeService = reservationTimeService;
     }
 
+    @RequireRole(role = MemberRole.ADMIN)
     @PostMapping
     public ResponseEntity<ReservationTimePreservationResponse> create(
             final @RequestBody @Valid ReservationTimePreservationRequest request) {
@@ -47,6 +50,7 @@ public class ReservationTimeController {
         return reservationTimeService.findAllAvailable(date, themeId);
     }
 
+    @RequireRole(role = MemberRole.ADMIN)
     @DeleteMapping("/{id}")
     public ResponseEntity<ReservationPreservationResponse> remove(final @PathVariable Long id) {
         reservationTimeService.remove(id);

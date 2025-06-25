@@ -23,7 +23,7 @@ import roomescape.fixture.E2ETestFixture;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @TestPropertySource(properties = {
-        "spring.sql.init.data-locations="
+        "spring.sql.init.data-locations=classpath:admin-data.sql"
 })
 public class ThemeE2ETest {
 
@@ -37,8 +37,11 @@ public class ThemeE2ETest {
 
     @Test
     void saveTheme() {
+        String adminSessionId = E2ETestFixture.loginAdmin();
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("JSESSIONID", adminSessionId)
                 .body(new ThemePreservationRequest("기억저장소", "memory", "thumbnail.png"))
                 .when().post("/themes")
                 .then().log().all()
@@ -72,7 +75,8 @@ public class ThemeE2ETest {
 
     @Test
     void findThemes() {
-        E2ETestFixture.saveTheme(DEFAULT_THEME_NAME);
+        String adminSessionId = E2ETestFixture.loginAdmin();
+        E2ETestFixture.saveTheme(adminSessionId, DEFAULT_THEME_NAME);
         RestAssured.given().log().all()
                 .when().get("/themes")
                 .then().log().all()
@@ -83,8 +87,10 @@ public class ThemeE2ETest {
     @Test
     void deleteTheme() {
         saveTheme();
+        String adminSessionId = E2ETestFixture.loginAdmin();
 
         RestAssured.given().log().all()
+                .cookie("JSESSIONID", adminSessionId)
                 .when().delete("/themes/1")
                 .then().log().all()
                 .statusCode(204);

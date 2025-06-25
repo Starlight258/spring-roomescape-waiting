@@ -37,9 +37,9 @@ public class AdminReservationE2ETest {
     @Test
     void saveReservation() {
         Long memberId = E2ETestFixture.signUpRegular();
-        Long timeId = E2ETestFixture.saveReservationTime(LocalTime.of(10, 0));
-        Long themeId = E2ETestFixture.saveTheme(DEFAULT_THEME_NAME);
         String sessionId = E2ETestFixture.loginAdmin();
+        Long timeId = E2ETestFixture.saveReservationTime(sessionId, LocalTime.of(10, 0));
+        Long themeId = E2ETestFixture.saveTheme(sessionId, DEFAULT_THEME_NAME);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -55,33 +55,5 @@ public class AdminReservationE2ETest {
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
-    }
-
-    @Test
-    void findReservations() {
-        Long timeId = E2ETestFixture.saveReservationTime(LocalTime.of(10, 0));
-        Long themeId = E2ETestFixture.saveTheme(DEFAULT_THEME_NAME);
-        E2ETestFixture.saveReservation(UnitTestFixture.makeFutureDate(), timeId, themeId);
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
-    }
-
-    @Test
-    void deleteReservation() {
-        saveReservation();
-
-        RestAssured.given().log().all()
-                .when().delete("/reservations/1")
-                .then().log().all()
-                .statusCode(204);
-
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(0));
     }
 }
