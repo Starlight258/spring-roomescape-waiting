@@ -10,13 +10,13 @@ import roomescape.domain.theme.Theme;
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
-    boolean existsByDateAndTimeIdAndThemeId(final ReservationDate date, final Long timeId, final Long themeId);
+    boolean existsBySlotDateAndSlotTimeIdAndSlotThemeId(final ReservationDate date, final Long timeId, final Long themeId);
 
-    boolean existsByTimeId(Long timeId);
+    boolean existsBySlotTimeId(Long timeId);
 
-    boolean existsByThemeId(Long themeId);
+    boolean existsBySlotThemeId(Long themeId);
 
-    Long countByDateBetweenAndTheme(ReservationDate startDate, ReservationDate endDate, Theme theme);
+    Long countBySlotDateBetweenAndSlotTheme(ReservationDate startDate, ReservationDate endDate, Theme theme);
 
     List<Reservation> findByMemberId(Long memberId);
 }

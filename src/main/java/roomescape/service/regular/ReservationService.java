@@ -88,7 +88,7 @@ public class ReservationService {
     private void validateReservationExists(final ReservationDate reservationDate,
                                            final ReservationTime reservationTime,
                                            final Theme theme) {
-        if (reservationRepository.existsByDateAndTimeIdAndThemeId(reservationDate, reservationTime.getId(),
+        if (reservationRepository.existsBySlotDateAndSlotTimeIdAndSlotThemeId(reservationDate, reservationTime.getId(),
                 theme.getId())) {
             throw new ConflictException("Reservation is already exists");
         }

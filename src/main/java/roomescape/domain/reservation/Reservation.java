@@ -1,11 +1,8 @@
 package roomescape.domain.reservation;
 
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,6 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import roomescape.domain.member.Member;
 import roomescape.domain.reservationtime.ReservationTime;
+import roomescape.domain.slot.Slot;
 import roomescape.domain.theme.Theme;
 import roomescape.exception.BadRequestException;
 
@@ -31,37 +29,22 @@ public class Reservation {
     private Long id;
 
     @Embedded
-    @Column(nullable = false)
-    private ReservationDate date;
-
-    @Enumerated(value = EnumType.STRING)
-    private ReservationStatus status;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
-    @JoinColumn(name = "time_id")
-    private ReservationTime time;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
-    @JoinColumn(name = "theme_id")
-    private Theme theme;
+    private Slot slot;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public Reservation(final ReservationDate date, final ReservationTime time, final Theme theme, final Member member,
-                       final ReservationStatus status) {
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
+    public Reservation(final Slot slot, final Member member) {
+        this.slot = slot;
         this.member = member;
-        this.status = status;
     }
 
     public static Reservation createReservation(final ReservationDate date, final ReservationTime time,
                                                 final Theme theme, final Member member) {
         validateFutureDateTime(date, time);
-        return new Reservation(date, time, theme, member, ReservationStatus.RESERVED);
+        Slot slot = new Slot(date, time, theme);
+        return new Reservation(slot, member);
     }
 
     private static void validateFutureDateTime(final ReservationDate date, final ReservationTime time) {

@@ -54,7 +54,7 @@ public class ThemeService {
         List<Theme> themes = themeRepository.findAll();
         LocalDate nowDate = LocalDate.now();
         PopularTheme popularTheme = new PopularTheme(nowDate, themes,
-                reservationRepository::countByDateBetweenAndTheme);
+                reservationRepository::countBySlotDateBetweenAndSlotTheme);
         return popularTheme.findTopPopular(POPULAR_THEME_SIZE)
                 .stream()
                 .map(ThemePopularResponse::from)
@@ -73,7 +73,7 @@ public class ThemeService {
     }
 
     private void validateReservationNotExists(final Long themeId) {
-        if (reservationRepository.existsByThemeId(themeId)) {
+        if (reservationRepository.existsBySlotThemeId(themeId)) {
             throw new BadRequestException("The theme is referenced by reservation");
         }
     }

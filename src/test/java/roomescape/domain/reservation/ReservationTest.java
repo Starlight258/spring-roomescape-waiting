@@ -1,7 +1,6 @@
 package roomescape.domain.reservation;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.member.Member;
@@ -16,8 +15,9 @@ class ReservationTest {
     void 예약은_현재_시간_이후로만_가능하다() {
         // Given
         Member member = UnitTestFixture.makeRegularMember();
-        ReservationDate date = new ReservationDate(LocalDate.now());
-        ReservationTime time = new ReservationTime(LocalTime.now().plusHours(1));
+        LocalDateTime afterOneHour = LocalDateTime.now().plusHours(1);
+        ReservationDate date = new ReservationDate(afterOneHour.toLocalDate());
+        ReservationTime time = new ReservationTime(afterOneHour.toLocalTime());
         Theme theme = UnitTestFixture.makeTheme();
 
         // When & Then
@@ -29,8 +29,9 @@ class ReservationTest {
     void 과거_시간으로_예약은_불가능하다() {
         // Given
         Member member = UnitTestFixture.makeRegularMember();
-        ReservationDate date = new ReservationDate(LocalDate.now());
-        ReservationTime time = new ReservationTime(LocalTime.now().minusHours(1));
+        LocalDateTime beforeOneHour = LocalDateTime.now().minusHours(1);
+        ReservationDate date = new ReservationDate(beforeOneHour.toLocalDate());
+        ReservationTime time = new ReservationTime(beforeOneHour.toLocalTime());
         Theme theme = UnitTestFixture.makeTheme();
 
         // When & Then

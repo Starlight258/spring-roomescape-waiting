@@ -52,7 +52,7 @@ public class ReservationTimeService {
                                                                                   ReservationTime time, Long themeId) {
         Long timeId = time.getId();
         String startAt = TimeUtils.truncatedLocalTimeByMinutes(time.getStartAt()).toString();
-        if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
+        if (reservationRepository.existsBySlotDateAndSlotTimeIdAndSlotThemeId(date, timeId, themeId)) {
             return new ReservationTimeAvailableResponse(startAt, timeId, true);
         }
         return new ReservationTimeAvailableResponse(startAt, timeId, false);
@@ -70,7 +70,7 @@ public class ReservationTimeService {
     }
 
     private void validateReservationNotExists(final Long id) {
-        if (reservationRepository.existsByTimeId(id)) {
+        if (reservationRepository.existsBySlotTimeId(id)) {
             throw new BadRequestException("The reservation time is referenced by reservation");
         }
     }
