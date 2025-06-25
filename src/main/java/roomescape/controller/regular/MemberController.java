@@ -37,6 +37,14 @@ public class MemberController {
                 .build();
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(final HttpSession httpSession) {
+        httpSession.invalidate();
+        return ResponseEntity
+                .ok()
+                .build();
+    }
+
     @GetMapping("/login/check")
     public ResponseEntity<CheckLoginResponse> checkLogin(final HttpSession httpSession) {
         CheckLoginResponse response = memberService.checkLogin(httpSession);
