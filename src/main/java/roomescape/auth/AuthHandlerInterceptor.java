@@ -31,7 +31,7 @@ public class AuthHandlerInterceptor implements HandlerInterceptor {
     private void validateSession(final HttpServletRequest request, final MemberRole expectedRole) {
         HttpSession session = request.getSession();
         String actualRole = (String) session.getAttribute("role");
-        if (actualRole == null || expectedRole != MemberRole.valueOf(actualRole)) {
+        if (actualRole == null || !MemberRole.valueOf(actualRole).canAccess(expectedRole)) {
             throw new ForbiddenException("Forbidden request");
         }
     }
