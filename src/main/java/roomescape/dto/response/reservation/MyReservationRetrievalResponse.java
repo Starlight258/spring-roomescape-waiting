@@ -5,7 +5,6 @@ import roomescape.domain.reservation.ReservationStatus;
 import roomescape.domain.slot.Slot;
 
 public record MyReservationRetrievalResponse(
-        Long reservationId,
         String theme,
         String date,
         String time,
@@ -14,7 +13,6 @@ public record MyReservationRetrievalResponse(
     public static MyReservationRetrievalResponse from(Reservation reservation) {
         Slot slot = reservation.getSlot();
         return new MyReservationRetrievalResponse(
-                reservation.getId(),
                 slot.getTheme().getName().getName(),
                 slot.getDate().getDate().toString(),
                 slot.getTime().getStartAt().toString(),
