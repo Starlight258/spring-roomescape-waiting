@@ -21,4 +21,8 @@ public class AdminWaitingService {
                 .map(WaitingRetrievalResponse::from)
                 .toList();
     }
+
+    public void remove(final Long waitingId) {
+        waitingRepository.deleteById(waitingId);
+    }
 }

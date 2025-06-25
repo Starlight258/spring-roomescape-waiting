@@ -71,8 +71,8 @@ public class WaitingService {
         }
     }
 
-    private Waiting getWaiting(final Long reservationId) {
-        return waitingRepository.findById(reservationId)
+    private Waiting getWaiting(final Long id) {
+        return waitingRepository.findById(id)
                 .orElseThrow(() -> new RoomescapeException("Server internal exception"));
     }
 
