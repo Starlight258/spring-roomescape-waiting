@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.RequireRole;
 import roomescape.dto.request.member.MemberPrinciple;
 import roomescape.dto.request.reservation.RegularReservationPreservationRequest;
+import roomescape.dto.response.reservation.MyReservationRetrievalResponse;
 import roomescape.dto.response.reservation.ReservationPreservationResponse;
 import roomescape.dto.response.reservation.ReservationRetrievalResponse;
 import roomescape.service.regular.ReservationService;
@@ -43,8 +44,10 @@ public class ReservationController {
 
     @RequireRole
     @GetMapping("/reservations-mine")
-    public List<ReservationRetrievalResponse> findMyReservations() {
-        return reservationService.findAll();
+    public List<MyReservationRetrievalResponse> findMyReservations(
+            final MemberPrinciple memberPrinciple
+    ) {
+        return reservationService.findMyReservations(memberPrinciple);
     }
 
     @RequireRole

@@ -21,6 +21,7 @@ import roomescape.dto.response.theme.ThemeRetrievalResponse;
 
 public class E2ETestFixture {
 
+    public static final String DEFAULT_MEMBER_NAME = "mint";
     public static final String DEFAULT_THEME_NAME = "기억저장소";
 
     public static Long saveReservationTime(String sessionId, LocalTime time) {
@@ -77,10 +78,10 @@ public class E2ETestFixture {
         return response.id();
     }
 
-    public static Long signUpRegular() {
+    public static Long signUpRegular(String name) {
         SignupResponse signupResponse = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new SignupRequest("mint", "mint@gmail.com", "password"))
+                .body(new SignupRequest(name, name + "@gmail.com", "password"))
                 .when().post("/members")
                 .then().log().all()
                 .statusCode(201)
@@ -89,10 +90,10 @@ public class E2ETestFixture {
         return signupResponse.id();
     }
 
-    public static String loginRegular() {
+    public static String loginRegular(final String name) {
         return RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new LoginRequest("mint@gmail.com", "password"))
+                .body(new LoginRequest(name + "@gmail.com", "password"))
                 .when().post("/login")
                 .then().log().all()
                 .statusCode(200)
@@ -100,9 +101,9 @@ public class E2ETestFixture {
                 .cookie("JSESSIONID");
     }
 
-    public static String signUpRegularAndLogin() {
-        signUpRegular();
-        return loginRegular();
+    public static String signUpRegularAndLogin(String name) {
+        signUpRegular(name);
+        return loginRegular(name);
     }
 
     public static String loginAdmin() {

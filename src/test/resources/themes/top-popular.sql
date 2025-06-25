@@ -23,8 +23,8 @@ VALUES ('08:00'),
 INSERT INTO member(name, email, password, role)
 VALUES ('mint', 'mint@gmail.com', 'password', 'REGULAR');
 
-INSERT INTO reservation(date, theme_id, time_id, member_id)
-VALUES ('2025-06-20', 3L, 1L, 1L),
-       ('2025-06-20', 5L, 1L, 1L),
-       ('2025-06-20', 5L, 2L, 1L)
+INSERT INTO reservation(date, theme_id, time_id, member_id, status)
+VALUES ('2025-06-20', 3L, 1L, 1L, 'RESERVED'),
+       ('2025-06-20', 5L, 1L, 1L, 'RESERVED'),
+       ('2025-06-20', 5L, 2L, 1L, 'RESERVED')
 ;

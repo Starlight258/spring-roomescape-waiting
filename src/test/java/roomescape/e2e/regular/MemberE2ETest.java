@@ -3,6 +3,7 @@ package roomescape.e2e.regular;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static roomescape.fixture.E2ETestFixture.DEFAULT_MEMBER_NAME;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -59,7 +60,7 @@ public class MemberE2ETest {
 
     @Test
     void checkLogin() {
-        String sessionId = E2ETestFixture.signUpRegularAndLogin();
+        String sessionId = E2ETestFixture.signUpRegularAndLogin(DEFAULT_MEMBER_NAME);
 
         CheckLoginResponse response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -70,7 +71,7 @@ public class MemberE2ETest {
                 .extract()
                 .as(CheckLoginResponse.class);
 
-        assertThat(response.name()).isEqualTo("mint");
+        assertThat(response.name()).isEqualTo(DEFAULT_MEMBER_NAME);
     }
 
 }

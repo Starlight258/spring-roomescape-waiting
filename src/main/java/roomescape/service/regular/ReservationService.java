@@ -11,6 +11,7 @@ import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
 import roomescape.dto.request.member.MemberPrinciple;
 import roomescape.dto.request.reservation.RegularReservationPreservationRequest;
+import roomescape.dto.response.reservation.MyReservationRetrievalResponse;
 import roomescape.dto.response.reservation.ReservationPreservationResponse;
 import roomescape.dto.response.reservation.ReservationRetrievalResponse;
 import roomescape.exception.ConflictException;
@@ -96,5 +97,12 @@ public class ReservationService {
     private Member getMember(final Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("멤버가 존재하지 않습니다."));
+    }
+
+    public List<MyReservationRetrievalResponse> findMyReservations(final MemberPrinciple memberPrinciple) {
+        List<Reservation> reservations = reservationRepository.findByMemberId(memberPrinciple.memberId());
+        return reservations.stream()
+                .map(MyReservationRetrievalResponse::from)
+                .toList();
     }
 }

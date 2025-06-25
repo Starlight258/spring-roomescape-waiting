@@ -4,6 +4,8 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -32,6 +34,9 @@ public class Reservation {
     @Column(nullable = false)
     private ReservationDate date;
 
+    @Enumerated(value = EnumType.STRING)
+    private ReservationStatus status;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
     @JoinColumn(name = "time_id")
     private ReservationTime time;
@@ -44,17 +49,19 @@ public class Reservation {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public Reservation(final ReservationDate date, final ReservationTime time, final Theme theme, final Member member) {
+    public Reservation(final ReservationDate date, final ReservationTime time, final Theme theme, final Member member,
+                       final ReservationStatus status) {
         this.date = date;
         this.time = time;
         this.theme = theme;
         this.member = member;
+        this.status = status;
     }
 
     public static Reservation createReservation(final ReservationDate date, final ReservationTime time,
                                                 final Theme theme, final Member member) {
         validateFutureDateTime(date, time);
-        return new Reservation(date, time, theme, member);
+        return new Reservation(date, time, theme, member, ReservationStatus.RESERVED);
     }
 
     private static void validateFutureDateTime(final ReservationDate date, final ReservationTime time) {

@@ -1,6 +1,7 @@
 package roomescape.e2e.regular;
 
 import static org.hamcrest.Matchers.is;
+import static roomescape.fixture.E2ETestFixture.DEFAULT_MEMBER_NAME;
 
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
@@ -66,7 +67,7 @@ public class ReservationTimeE2ETest {
         E2ETestFixture.saveReservationTime(adminSessionId, LocalTime.of(11, 0));
         Long themeId = E2ETestFixture.saveTheme(adminSessionId, E2ETestFixture.DEFAULT_THEME_NAME);
         LocalDate date = UnitTestFixture.makeFutureDate();
-        String regularSessionId = E2ETestFixture.signUpRegularAndLogin();
+        String regularSessionId = E2ETestFixture.signUpRegularAndLogin(DEFAULT_MEMBER_NAME);
         E2ETestFixture.saveReservation(regularSessionId, date, timeId1, themeId);
 
         // when

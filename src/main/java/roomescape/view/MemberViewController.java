@@ -25,4 +25,9 @@ public class MemberViewController {
     public String getSignupPage() {
         return "signup";
     }
+
+    @GetMapping("/reservation-mine")
+    public String getMyReservationsPage() {
+        return "reservation-mine";
+    }
 }

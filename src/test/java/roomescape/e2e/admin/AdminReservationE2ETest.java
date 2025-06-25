@@ -1,6 +1,7 @@
 package roomescape.e2e.admin;
 
 import static org.hamcrest.Matchers.is;
+import static roomescape.fixture.E2ETestFixture.DEFAULT_MEMBER_NAME;
 import static roomescape.fixture.E2ETestFixture.DEFAULT_THEME_NAME;
 
 import io.restassured.RestAssured;
@@ -36,7 +37,7 @@ public class AdminReservationE2ETest {
 
     @Test
     void saveReservation() {
-        Long memberId = E2ETestFixture.signUpRegular();
+        Long memberId = E2ETestFixture.signUpRegular(DEFAULT_MEMBER_NAME);
         String sessionId = E2ETestFixture.loginAdmin();
         Long timeId = E2ETestFixture.saveReservationTime(sessionId, LocalTime.of(10, 0));
         Long themeId = E2ETestFixture.saveTheme(sessionId, DEFAULT_THEME_NAME);
