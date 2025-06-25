@@ -1,6 +1,5 @@
 package roomescape.domain.reservation;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -31,7 +30,7 @@ public class Reservation {
     @Embedded
     private Slot slot;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "member_id")
     private Member member;
 

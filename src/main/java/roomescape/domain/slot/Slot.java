@@ -1,6 +1,5 @@
 package roomescape.domain.slot;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
@@ -23,11 +22,11 @@ public class Slot {
     @Column(nullable = false)
     private ReservationDate date;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "time_id")
     private ReservationTime time;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "theme_id")
     private Theme theme;
 
