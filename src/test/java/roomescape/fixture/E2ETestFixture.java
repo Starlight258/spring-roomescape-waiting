@@ -14,10 +14,12 @@ import roomescape.dto.request.member.LoginRequest;
 import roomescape.dto.request.member.SignupRequest;
 import roomescape.dto.request.reservation.RegularReservationPreservationRequest;
 import roomescape.dto.request.theme.ThemePreservationRequest;
+import roomescape.dto.request.waiting.WaitingPreservationRequest;
 import roomescape.dto.response.member.SignupResponse;
 import roomescape.dto.response.reservation.ReservationPreservationResponse;
 import roomescape.dto.response.reservationtime.ReservationTimePreservationResponse;
 import roomescape.dto.response.theme.ThemeRetrievalResponse;
+import roomescape.dto.response.waiting.WaitingPreservationResponse;
 
 public class E2ETestFixture {
 
@@ -75,6 +77,19 @@ public class E2ETestFixture {
                 .extract()
                 .as(ReservationPreservationResponse.class);
 
+        return response.id();
+    }
+
+    public static Long saveWaiting(String sessionId, LocalDate date, Long timeId, Long themeId) {
+        WaitingPreservationResponse response = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .cookie("JSESSIONID", sessionId)
+                .body(new WaitingPreservationRequest(date.toString(), timeId, themeId))
+                .when().post("/waiting")
+                .then().log().all()
+                .statusCode(201)
+                .extract()
+                .as(WaitingPreservationResponse.class);
         return response.id();
     }
 
