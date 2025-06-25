@@ -57,7 +57,7 @@ public class WaitingService {
     public void remove(final Long waitingId, final MemberPrinciple memberPrinciple) {
         Long memberId = memberPrinciple.memberId();
         if (waitingRepository.existsById(waitingId)) {
-            Waiting waiting = getWaiting(waitingId);
+            Waiting waiting = getWaitingIfIdExists(waitingId);
             if (!Objects.equals(waiting.getMember().getId(), memberId)) {
                 throw new ForbiddenException("Reservation deletion is forbidden");
             }
@@ -71,7 +71,7 @@ public class WaitingService {
         }
     }
 
-    private Waiting getWaiting(final Long id) {
+    private Waiting getWaitingIfIdExists(final Long id) {
         return waitingRepository.findById(id)
                 .orElseThrow(() -> new RoomescapeException("Server internal exception"));
     }
