@@ -15,7 +15,12 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(final MethodParameter parameter) {
-        return parameter.getParameterType().equals(MemberPrinciple.class);
+        Class<?> clazz = parameter.getParameterType();
+        boolean isMemberPrinciple = clazz.equals(MemberPrinciple.class);
+        Class<?> controllerClass = parameter.getContainingClass();
+        boolean hasRequireRoleOnClass = controllerClass.isAnnotationPresent(RequireRole.class);
+        boolean hasRequireRoleOnMethod = parameter.getMethodAnnotation(RequireRole.class) != null;
+        return isMemberPrinciple && (hasRequireRoleOnClass || hasRequireRoleOnMethod);
     }
 
     @Override
