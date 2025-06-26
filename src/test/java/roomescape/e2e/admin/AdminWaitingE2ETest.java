@@ -51,7 +51,7 @@ public class AdminWaitingE2ETest {
         List<WaitingRetrievalResponse> responses = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .cookie("JSESSIONID", adminSessionId)
-                .when().get("/admin/waiting")
+                .when().get("/admin/waitings")
                 .then().log().all()
                 .statusCode(200)
                 .extract()

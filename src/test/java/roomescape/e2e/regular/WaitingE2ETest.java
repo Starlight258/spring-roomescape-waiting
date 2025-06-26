@@ -43,10 +43,11 @@ public class WaitingE2ETest {
         Long themeId = E2ETestFixture.saveTheme(adminSessionId, DEFAULT_THEME_NAME);
         String regularSessionId = E2ETestFixture.signUpRegularAndLogin(DEFAULT_MEMBER_NAME);
         E2ETestFixture.saveReservation(regularSessionId, UnitTestFixture.makeFutureDate(), timeId, themeId);
+        String regular2SessionId = E2ETestFixture.signUpRegularAndLogin("aina");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("JSESSIONID", regularSessionId)
+                .cookie("JSESSIONID", regular2SessionId)
                 .body(new WaitingPreservationRequest(FUTURE_DATE, timeId, themeId))
                 .when().post("/waiting")
                 .then().log().all()
