@@ -14,7 +14,6 @@ import roomescape.domain.theme.Theme;
 import roomescape.domain.waiting.WaitingWithRank;
 import roomescape.dto.request.member.MemberPrinciple;
 import roomescape.dto.request.reservation.RegularReservationPreservationRequest;
-import roomescape.dto.response.reservation.MyReservationAndWaitingSortedResult;
 import roomescape.dto.response.reservation.MyReservationRetrievalResponse;
 import roomescape.dto.response.reservation.ReservationPreservationResponse;
 import roomescape.dto.response.reservation.ReservationRetrievalResponse;
@@ -70,11 +69,7 @@ public class ReservationService {
         Long memberId = memberPrinciple.memberId();
         List<Reservation> reservations = reservationRepository.findByMemberId(memberId);
         List<WaitingWithRank> waitingWithRanks = waitingRepository.findWaitingsWithRankByMemberId(memberId);
-        List<MyReservationAndWaitingSortedResult> sortedResult = MyReservationAndWaitingSortedResult.of(reservations,
-                waitingWithRanks);
-        return sortedResult.stream()
-                .map(MyReservationRetrievalResponse::from)
-                .toList();
+        return MyReservationRetrievalResponse.of(reservations, waitingWithRanks);
     }
 
     public void remove(final Long reservationId, final MemberPrinciple memberPrinciple) {
