@@ -138,4 +138,37 @@ public class ReservationE2ETest {
                 .statusCode(200)
                 .body("size()", is(0));
     }
+
+    @Test
+    void promotedWaitingWhenDeleteReservation() {
+        String adminSessionId = E2ETestFixture.loginAdmin();
+        Long timeId = E2ETestFixture.saveReservationTime(adminSessionId, LocalTime.of(10, 0));
+        Long themeId = E2ETestFixture.saveTheme(adminSessionId, DEFAULT_THEME_NAME);
+
+        String sessionId = E2ETestFixture.signUpRegularAndLogin(DEFAULT_MEMBER_NAME);
+        LocalDate date = UnitTestFixture.makeFutureDate();
+        E2ETestFixture.saveReservation(sessionId, date, timeId, themeId);
+        String sessionId2 = E2ETestFixture.signUpRegularAndLogin("aina");
+        E2ETestFixture.saveWaiting(sessionId2, date, timeId, themeId);
+
+        RestAssured.given().log().all()
+                .cookie("JSESSIONID", sessionId)
+                .when().delete("/reservations/1")
+                .then().log().all()
+                .statusCode(204);
+
+        List<MyReservationRetrievalResponse> responses = RestAssured.given().log().all()
+                .cookie("JSESSIONID", sessionId2)
+                .when().get("/reservations-mine")
+                .then().log().all()
+                .statusCode(200)
+                .extract()
+                .as(new TypeRef<>() {
+                });
+
+        SoftAssertions.assertSoftly(softAssertions -> {
+            softAssertions.assertThat(responses.size()).isOne();
+            softAssertions.assertThat(responses.getFirst().date()).isEqualTo(date);
+        });
+    }
 }
