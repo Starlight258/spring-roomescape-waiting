@@ -2,6 +2,7 @@ package roomescape.service.regular;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.common.TimeUtils;
 import roomescape.domain.member.Member;
@@ -10,7 +11,6 @@ import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.slot.Slot;
 import roomescape.domain.theme.Theme;
-import roomescape.domain.waiting.Waiting;
 import roomescape.domain.waiting.WaitingWithRank;
 import roomescape.dto.request.member.MemberPrinciple;
 import roomescape.dto.request.reservation.RegularReservationPreservationRequest;
@@ -20,7 +20,6 @@ import roomescape.dto.response.reservation.ReservationPreservationResponse;
 import roomescape.dto.response.reservation.ReservationRetrievalResponse;
 import roomescape.exception.ConflictException;
 import roomescape.exception.ForbiddenException;
-import roomescape.exception.RoomescapeException;
 import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -80,34 +79,31 @@ public class ReservationService {
 
     public void remove(final Long reservationId, final MemberPrinciple memberPrinciple) {
         Long memberId = memberPrinciple.memberId();
-        if (reservationRepository.existsById(reservationId)) {
-            Reservation reservation = checkOwner(reservationId, memberId);
-            Slot slot = reservation.getSlot();
-            if (waitingRepository.existsBySlot(slot)) {
-                promotedWaiting(slot);
-            }
+        Optional<Reservation> reservationOpt = reservationRepository.findById(reservationId);
+        if (reservationOpt.isEmpty()) {
+            return;
         }
+        Reservation reservation = reservationOpt.get();
+        validateOwner(reservation, memberId);
+
+        Slot slot = reservation.getSlot();
+        promotedWaiting(slot);
         reservationRepository.deleteById(reservationId);
     }
 
+    private void validateOwner(final Reservation reservation, final Long memberId) {
+        if (!Objects.equals(reservation.getMember().getId(), memberId)) {
+            throw new ForbiddenException("Reservation deletion is forbidden");
+        }
+    }
+
     private void promotedWaiting(final Slot slot) {
-        List<WaitingWithRank> waitings = waitingRepository.findWaitingsWithRankBySlot(slot);
-        Waiting promotedWaiting = findPromotedWaiting(waitings);
-        waitingRepository.deleteById(promotedWaiting.getId());
-        reservationRepository.save(new Reservation(promotedWaiting.getSlot(), promotedWaiting.getMember()));
-    }
-
-    private Waiting findPromotedWaiting(final List<WaitingWithRank> waitings) {
-        return waitings.stream()
-                .filter(w -> w.getRank() == 1)
-                .map(WaitingWithRank::getWaiting)
-                .findFirst()
-                .orElseThrow(() -> new RoomescapeException("Server internal exception"));
-    }
-
-    private Reservation getReservationIfIdExists(final Long reservationId) {
-        return reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new RoomescapeException("Server internal exception"));
+        waitingRepository.findTopRankWaitingBySlot(slot.getTheme(), slot.getDate(),
+                        slot.getTime())
+                .ifPresent(waiting -> {
+                    waitingRepository.deleteById(waiting.getId());
+                    reservationRepository.save(new Reservation(waiting.getSlot(), waiting.getMember()));
+                });
     }
 
     private ReservationTime getReservationTime(final Long timeId) {
@@ -118,14 +114,6 @@ public class ReservationService {
     private Theme getTheme(final Long themeId) {
         return themeRepository.findById(themeId)
                 .orElseThrow(() -> new IllegalArgumentException("테마가 존재하지 않습니다."));
-    }
-
-    private Reservation checkOwner(final Long reservationId, final Long memberId) {
-        Reservation reservation = getReservationIfIdExists(reservationId);
-        if (!Objects.equals(reservation.getMember().getId(), memberId)) {
-            throw new ForbiddenException("Reservation deletion is forbidden");
-        }
-        return reservation;
     }
 
     private void validateReservationExists(final ReservationDate reservationDate,
