@@ -23,6 +23,7 @@ public interface WaitingRepository extends JpaRepository<Waiting, Long> {
             "WHERE w.member.id = :memberId")
     List<WaitingWithRank> findWaitingsWithRankByMemberId(Long memberId);
 
+    // TODO : rank == 1, LIMIT, slot
     @Query("SELECT new roomescape.domain.waiting.WaitingWithRank(" +
             "    w, " +
             "    (SELECT COUNT(w2) + 1 " +

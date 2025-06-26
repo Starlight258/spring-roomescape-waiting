@@ -92,11 +92,12 @@ public class ReservationService {
 
     private void promotedWaiting(final Slot slot) {
         List<WaitingWithRank> waitings = waitingRepository.findWaitingsWithRankBySlot(slot);
-        Waiting promotedWaiting = findWaiting(waitings);
+        Waiting promotedWaiting = findPromotedWaiting(waitings);
+        waitingRepository.deleteById(promotedWaiting.getId());
         reservationRepository.save(new Reservation(promotedWaiting.getSlot(), promotedWaiting.getMember()));
     }
 
-    private Waiting findWaiting(final List<WaitingWithRank> waitings) {
+    private Waiting findPromotedWaiting(final List<WaitingWithRank> waitings) {
         return waitings.stream()
                 .filter(w -> w.getRank() == 1)
                 .map(WaitingWithRank::getWaiting)

@@ -1,5 +1,6 @@
 package roomescape.dto.response.reservation;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -10,9 +11,11 @@ import roomescape.domain.reservation.ReservationStatus;
 import roomescape.domain.slot.Slot;
 import roomescape.domain.waiting.WaitingWithRank;
 
+// TODO: @JsonFormat
 public record MyReservationAndWaitingSortedResult(
         Long waitingId,
         String theme,
+        @JsonFormat(pattern = "HH:mm")
         LocalDate date,
         LocalTime time,
         String status
@@ -29,13 +32,16 @@ public record MyReservationAndWaitingSortedResult(
         List<MyReservationAndWaitingSortedResult> results = reservations.stream()
                 .map(MyReservationAndWaitingSortedResult::from)
                 .collect(Collectors.toList());
+
         List<MyReservationAndWaitingSortedResult> ranks = waitingWithRanks.stream()
                 .map(MyReservationAndWaitingSortedResult::from)
                 .toList();
+
         results.addAll(ranks);
         return results;
     }
 
+    // TODO : Comparator 리팩토링
     private static List<MyReservationAndWaitingSortedResult> sort(
             final List<MyReservationAndWaitingSortedResult> results) {
         results.sort((r1, r2) -> {
