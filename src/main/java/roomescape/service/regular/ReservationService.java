@@ -6,7 +6,7 @@ import java.util.Objects;
 import org.springframework.stereotype.Service;
 import roomescape.common.TimeUtils;
 import roomescape.domain.reservation.Reservation;
-import roomescape.domain.waiting.WaitingWithRank;
+import roomescape.dto.request.waiting.WaitingWithRank;
 import roomescape.dto.request.member.MemberPrinciple;
 import roomescape.dto.request.reservation.RegularReservationPreservationRequest;
 import roomescape.dto.response.reservation.MyReservationRetrievalResponse;

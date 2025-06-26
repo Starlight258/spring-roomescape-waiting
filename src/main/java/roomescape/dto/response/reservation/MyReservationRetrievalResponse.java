@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationStatus;
 import roomescape.domain.slot.Slot;
-import roomescape.domain.waiting.WaitingWithRank;
+import roomescape.dto.request.waiting.WaitingWithRank;
 
 public record MyReservationRetrievalResponse(
         Long waitingId,
@@ -54,13 +54,13 @@ public record MyReservationRetrievalResponse(
     }
 
     private static MyReservationRetrievalResponse from(WaitingWithRank waitingWithRank) {
-        Slot slot = waitingWithRank.getWaiting().getSlot();
+        Slot slot = waitingWithRank.waiting().getSlot();
         return new MyReservationRetrievalResponse(
-                waitingWithRank.getWaiting().getId(),
+                waitingWithRank.waiting().getId(),
                 slot.getTheme().getName().getName(),
                 slot.getDate().getDate(),
                 slot.getTime().getStartAt(),
-                String.format(ReservationStatus.WAITING.getViewName(), waitingWithRank.getRank())
+                String.format(ReservationStatus.WAITING.getViewName(), waitingWithRank.rank())
         );
     }
 }

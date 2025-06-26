@@ -9,12 +9,12 @@ import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.waiting.Waiting;
-import roomescape.domain.waiting.WaitingWithRank;
+import roomescape.dto.request.waiting.WaitingWithRank;
 
 @Repository
 public interface WaitingRepository extends JpaRepository<Waiting, Long> {
 
-    @Query("SELECT new roomescape.domain.waiting.WaitingWithRank(" +
+    @Query("SELECT new roomescape.dto.request.waiting.WaitingWithRank(" +
             "    w, " +
             "    (SELECT COUNT(w2) + 1 " +
             "     FROM Waiting w2 " +
