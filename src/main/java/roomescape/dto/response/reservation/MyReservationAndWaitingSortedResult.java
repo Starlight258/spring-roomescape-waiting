@@ -15,8 +15,9 @@ import roomescape.domain.waiting.WaitingWithRank;
 public record MyReservationAndWaitingSortedResult(
         Long waitingId,
         String theme,
-        @JsonFormat(pattern = "HH:mm")
+        @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate date,
+        @JsonFormat(pattern = "HH:mm")
         LocalTime time,
         String status
 ) {

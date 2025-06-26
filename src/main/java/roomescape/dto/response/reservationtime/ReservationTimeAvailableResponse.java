@@ -1,4 +1,12 @@
 package roomescape.dto.response.reservationtime;
 
-public record ReservationTimeAvailableResponse(String startAt, Long timeId, boolean alreadyBooked) {
+import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalTime;
+
+public record ReservationTimeAvailableResponse(
+        @JsonFormat(pattern = "HH:mm")
+        LocalTime startAt,
+        Long timeId,
+        boolean alreadyBooked
+) {
 }

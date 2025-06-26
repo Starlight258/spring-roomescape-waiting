@@ -1,5 +1,6 @@
 package roomescape.service.regular;
 
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.common.TimeUtils;
@@ -51,7 +52,7 @@ public class ReservationTimeService {
     private ReservationTimeAvailableResponse makeReservationTimeAvailableResponse(ReservationDate date,
                                                                                   ReservationTime time, Long themeId) {
         Long timeId = time.getId();
-        String startAt = TimeUtils.truncatedLocalTimeByMinutes(time.getStartAt()).toString();
+        LocalTime startAt = time.getStartAt();
         if (reservationRepository.existsBySlotDateAndSlotTimeIdAndSlotThemeId(date, timeId, themeId)) {
             return new ReservationTimeAvailableResponse(startAt, timeId, true);
         }
